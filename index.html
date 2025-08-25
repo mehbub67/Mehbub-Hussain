@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mehbub Hussain — Web3 Portfolio</title>
+
+  <!-- Tailwind CSS via Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neonPink: '#ff3cac',
+            neonPurple: '#784BA0',
+            neonBlue: '#2b86c5',
+            neonCyan: '#22d3ee',
+            neonGreen: '#22c55e'
+          },
+          boxShadow: {
+            neon: '0 0 25px rgba(34,211,238,0.35), 0 0 45px rgba(120,75,160,0.25)'
+          },
+          backdropBlur: {
+            xs: '2px'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      --bg1:#030014;
+      --bg2:#06061a;
+      --bg3:#00101a;
+      --neonA:#8b5cf6;
+      --neonB:#ec4899;
+      --neonC:#22d3ee;
+      --neonD:#22c55e;
+    }
+
+    html, body { scroll-behavior:smooth; }
+
+    /* Cosmic gradient background with subtle motion */
+    body {
+      background:
+        radial-gradient(1200px 800px at 10% -10%, rgba(139,92,246,.20), transparent 60%),
+        radial-gradient(900px 700px at 110% 20%, rgba(34,211,238,.15), transparent 60%),
+        radial-gradient(1000px 900px at -10% 120%, rgba(236,72,153,.10), transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+    }
+
+    /* Glassmorphism helpers */
+    .glass {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* Neon border ring using pseudo element */
+    .neon-ring {
+      position: relative;
+      isolation: isolate;
+    }
+    .neon-ring::before {
+      content:"";
+      position: absolute; inset: -2px;
+      border-radius: inherit;
+      background: conic-gradient(from 0deg,
+        rgba(34,211,238,.8),
+        rgba(139,92,246,.8),
+        rgba(236,72,153,.8),
+        rgba(34,197,94,.8),
+        rgba(34,211,238,.8));
+      filter: blur(8px);
+      z-index:-1;
+      opacity:.6;
+      animation: swirl 8s linear infinite;
+    }
+
+    @keyframes swirl { 
+      to { transform: rotate(360deg); } 
+    }
+
+    /* 3D text glow */
+    .text-3d {
+      text-shadow:
+        0 0 12px rgba(139,92,246,.65),
+        0 0 28px rgba(236,72,153,.45),
+        0 0 48px rgba(34,211,238,.35);
+      transform-style: preserve-3d;
+      perspective: 800px;
+    }
+
+    /* Reveal-on-scroll base + active states */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px) scale(.98);
+      transition: all .8s cubic-bezier(.2,.65,.2,1);
+    }
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* 3D tilt container */
+    .tilt {
+      transform-style: preserve-3d;
+      perspective: 900px;
+      transition: transform .25s ease, box-shadow .25s ease;
+      will-change: transform;
+    }
+    .tilt .tilt-child { transform: translateZ(40px); }
+
+    /* Particle canvas sits behind everything */
+    #space {
+      position: fixed; inset:0; z-index: -1;
+      filter: drop-shadow(0 0 6px rgba(34,211,238,.6));
+    }
+
+    /* Floating cubes */
+    .cube {
+      width: 12px; height: 12px;
+      background: linear-gradient(145deg, rgba(139,92,246,.8), rgba(34,211,238,.8));
+      transform: translateZ(80px) rotateX(35deg) rotateY(45deg);
+      box-shadow: 0 0 18px rgba(139,92,246,.45);
+      animation: float 9s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0) translateX(0) translateZ(80px) rotateX(35deg) rotateY(45deg); }
+      50% { transform: translateY(-18px) translateX(6px) translateZ(80px) rotateX(35deg) rotateY(55deg); }
+    }
+
+    /* Buttons */
+    .btn-neon {
+      background: linear-gradient(90deg, var(--neonA), var(--neonB), var(--neonC), var(--neonD));
+      background-size: 300% 100%;
+      box-shadow: 0 0 20px rgba(34,211,238,.35), inset 0 0 18px rgba(139,92,246,.25);
+      transition: transform .2s ease, background-position .5s linear, box-shadow .2s ease;
+    }
+    .btn-neon:hover {
+      background-position: 100% 0;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 28px rgba(34,211,238,.6), inset 0 0 22px rgba(139,92,246,.35);
+    }
+
+    /* Inputs */
+    .field {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    .field:focus {
+      outline: none;
+      border-color: rgba(34,211,238,.75);
+      box-shadow: 0 0 0 4px rgba(34,211,238,.15), 0 0 24px rgba(139,92,246,.3);
+    }
+
+    /* Nav hover 3D */
+    .nav-3d:hover {
+      transform: translateZ(20px) translateY(-2px);
+      text-shadow: 0 0 12px rgba(34,211,238,.55);
+    }
+
+    /* Footer hairline */
+    .hairline { background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); height: 1px; }
+  </style>
+</head>
+
+<body class="text-white antialiased overflow-x-hidden">
+
+  <!-- Reactive particle space -->
+  <canvas id="space"></canvas>
+
+  <!-- Floating decor cubes -->
+  <div class="pointer-events-none fixed inset-0 -z-0">
+    <div class="cube absolute left-[10%] top-[25%]"></div>
+    <div class="cube absolute left-[70%] top-[35%]" style="animation-duration: 11s;"></div>
+    <div class="cube absolute left-[40%] top-[70%]" style="animation-duration: 13s;"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="fixed top-0 w-full z-50">
+    <nav class="glass mx-auto max-w-7xl mt-3 rounded-2xl px-5 sm:px-6 py-3 flex items-center justify-between shadow-neon">
+      <!-- 3D Logo text reacting to pointer -->
+      <a href="#home" class="logo3d font-extrabold text-xl sm:text-2xl tracking-wider text-3d">
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-neonCyan via-neonPurple to-neonPink">MH</span>
+      </a>
+
+      <ul class="hidden md:flex gap-6 text-sm">
+        <li><a class="nav-3d transition-transform duration-200" href="#home">Home</a></li>
+        <li><a class="nav-3d transition-transform duration-200" href="#about">About</a></li>
+        <li><a class="nav-3d transition-transform duration-200" href="#work">Work</a></li>
+        <li><a class="nav-3d transition-transform duration-200" href="#contact">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <a href="#support" id="supportBtn" class="btn-neon rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold">Upgrade to Paid Support — Rs.10</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Home -->
+  <section id="home" class="relative min-h-[100svh] flex items-center">
+    <div class="mx-auto max-w-7xl w-full px-6 pt-28 sm:pt-36 text-center">
+      <h1 class="reveal text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-3d">
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-neonCyan via-neonPurple to-neonPink">Mehbub Hussain</span>
+      </h1>
+
+      <p class="reveal mt-6 text-lg sm:text-xl text-white/80">
+        <span id="typewrite" class="font-semibold"></span>
+      </p>
+
+      <div class="reveal mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a href="#work" class="btn-neon rounded-xl px-6 py-3 font-semibold">Explore Work</a>
+        <a href="#contact" class="rounded-xl px-6 py-3 font-semibold glass hover:shadow-neon transition-shadow">Contact</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-20 sm:py-28">
+    <div class="mx-auto max-w-7xl px-6 grid md:grid-cols-2 gap-10 items-center">
+      <!-- 3D Photo Card -->
+      <div class="reveal">
+        <div class="tilt neon-ring rounded-3xl p-1">
+          <div class="glass rounded-3xl p-4 sm:p-6">
+            <div class="rounded-2xl overflow-hidden relative aspect-[4/3] tilt-child">
+              <img src="1000253168.jpeg" alt="Mehbub Hussain" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/5 pointer-events-none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio & Socials -->
+      <div class="reveal">
+        <h2 class="text-3xl sm:text-4xl font-extrabold">About</h2>
+        <p class="mt-4 text-white/80">
+          Hi, I'm Mehbub Hussain. Passionate about AI, Web3, and futuristic design. Exploring decentralized projects and building creative experiences.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a target="_blank" href="https://x.com/mehbub75" class="glass rounded-xl px-4 py-2 hover:shadow-neon transition">X: @mehbub75</a>
+          <a target="_blank" href="https://discord.com/users/mehbub30" class="glass rounded-xl px-4 py-2 hover:shadow-neon transition">Discord: mehbub30</a>
+          <a target="_blank" href="https://t.me/mahanzyro" class="glass rounded-xl px-4 py-2 hover:shadow-neon transition">Telegram: mahanzyro</a>
+          <a target="_blank" href="https://github.com/mehbub67" class="glass rounded-xl px-4 py-2 hover:shadow-neon transition">GitHub: mehbub67</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work -->
+  <section id="work" class="py-20 sm:py-28">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="reveal text-3xl sm:text-4xl font-extrabold mb-8">Work / Portfolio</h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card 1 -->
+        <article class="reveal tilt neon-ring rounded-3xl p-1">
+          <div class="glass rounded-3xl p-6 h-full flex flex-col">
+            <div class="tilt-child">
+              <div class="text-4xl">🎬</div>
+              <h3 class="mt-3 text-xl font-bold">AI Video Creations</h3>
+              <p class="mt-2 text-white/75">Storyboards, generative clips, and motion design experiments with AI pipelines.</p>
+            </div>
+            <div class="mt-4 flex-1"></div>
+            <button class="mt-4 btn-neon rounded-xl px-4 py-2 w-max">View Samples</button>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="reveal tilt neon-ring rounded-3xl p-1">
+          <div class="glass rounded-3xl p-6 h-full flex flex-col">
+            <div class="tilt-child">
+              <div class="text-4xl">🦄</div>
+              <h3 class="mt-3 text-xl font-bold">Crypto Research</h3>
+              <p class="mt-2 text-white/75">Notes and experiments on Camp, Huddle01, Somnia, and emerging ecosystems.</p>
+            </div>
+            <div class="mt-4 flex-1"></div>
+            <button class="mt-4 btn-neon rounded-xl px-4 py-2 w-max">Explore Research</button>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="reveal tilt neon-ring rounded-3xl p-1">
+          <div class="glass rounded-3xl p-6 h-full flex flex-col">
+            <div class="tilt-child">
+              <div class="text-4xl">🧩</div>
+              <h3 class="mt-3 text-xl font-bold">Web App Projects</h3>
+              <p class="mt-2 text-white/75">Shopping app, earning apps, and a futuristic YouTube‑style experience.</p>
+            </div>
+            <div class="mt-4 flex-1"></div>
+            <button class="mt-4 btn-neon rounded-xl px-4 py-2 w-max">Open Demos</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="py-20 sm:py-28">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="reveal text-3xl sm:text-4xl font-extrabold">Contact</h2>
+
+      <div class="grid md:grid-cols-2 gap-8 mt-6">
+        <form class="reveal glass rounded-3xl p-6 space-y-4">
+          <input class="field w-full rounded-xl px-4 py-3" type="text" placeholder="Name">
+          <input class="field w-full rounded-xl px-4 py-3" type="email" placeholder="Email">
+          <textarea class="field w-full rounded-xl px-4 py-3 h-32" placeholder="Message"></textarea>
+          <button type="submit" class="btn-neon rounded-xl px-6 py-3 font-semibold">Send Message</button>
+        </form>
+
+        <div class="reveal flex flex-col gap-3">
+          <a target="_blank" href="https://x.com/mehbub75" class="btn-neon rounded-xl px-5 py-3 text-center font-semibold">X: @mehbub75</a>
+          <a target="_blank" href="https://discord.com/users/mehbub30" class="btn-neon rounded-xl px-5 py-3 text-center font-semibold">Discord: mehbub30</a>
+          <a target="_blank" href="https://t.me/mahanzyro" class="btn-neon rounded-xl px-5 py-3 text-center font-semibold">Telegram: mahanzyro</a>
+          <a target="_blank" href="https://github.com/mehbub67" class="btn-neon rounded-xl px-5 py-3 text-center font-semibold">GitHub: mehbub67</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support Anchor -->
+  <section id="support" class="py-10">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="glass rounded-3xl p-6 text-center">
+        <p class="text-white/80">Support development and unlock priority help for just Rs.10.</p>
+        <button id="payBtn" class="mt-4 btn-neon rounded-xl px-6 py-3 font-semibold">Pay Rs.10</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- Footer -->
+  <footer class="py-8 text-center text-white/70">
+    © 2025 Mehbub Hussain | Powered by Web3 vibes
+  </footer>
+
+  <!-- Scripts: particles, typing, tilt, reveals, parallax -->
+  <script>
+    /* Typing effect */
+    const phrases = ["AI Explorer • Web3 Enthusiast • Creator"];
+    const el = document.getElementById('typewrite');
+    let pi = 0, ci = 0, dir = 1;
+    function type() {
+      const text = phrases[pi];
+      ci += dir;
+      el.textContent = text.slice(0, ci);
+      if (ci === text.length + 8) dir = -1;
+      if (ci === 0) { dir = 1; pi = (pi + 1) % phrases.length; }
+      setTimeout(type, dir > 0 ? 65 : 35);
+    }
+    type();
+
+    /* IntersectionObserver reveals */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* Particle field using rAF */
+    const canvas = document.getElementById('space');
+    const ctx = canvas.getContext('2d');
+    let W, H, PX = [];
+    function resize() {
+      W = canvas.width = innerWidth;
+      H = canvas.height = innerHeight;
+      PX = Array.from({length: Math.min(140, Math.floor(W*H/12000))}, () => ({
+        x: Math.random()*W, y: Math.random()*H,
+        vx: (Math.random()-.5)*0.45, vy: (Math.random()-.5)*0.45,
+        r: Math.random()*1.6 + .6
+      }));
+    }
+    addEventListener('resize', resize); resize();
+    function tick() {
+      ctx.clearRect(0,0,W,H);
+      for (const p of PX) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x<0||p.x>W) p.vx*=-1;
+        if (p.y<0||p.y>H) p.vy*=-1;
+        const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
+        g.addColorStop(0,'rgba(34,211,238,.9)');
+        g.addColorStop(1,'rgba(139,92,246,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      }
+      // subtle links
+      for (let i=0;i<PX.length;i++){
+        for (let j=i+1;j<PX.length;j++){
+          const a=PX[i], b=PX[j];
+          const dx=a.x-b.x, dy=a.y-b.y, d=dx*dx+dy*dy;
+          if (d<12000){
+            const o = 1 - d/12000;
+            ctx.strokeStyle=`rgba(34,211,238,${o*.25})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* 3D tilt on hover */
+    const tilts = document.querySelectorAll('.tilt');
+    tilts.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        const rx = (y - .5) * -16;
+        const ry = (x - .5) * 16;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        card.style.boxShadow = `0 18px 40px rgba(0,0,0,.35), 0 0 40px rgba(34,211,238,.25)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(900px) rotateX(0) rotateY(0)';
+        card.style.boxShadow = '';
+      });
+    });
+
+    /* Logo parallax */
+    const logo = document.querySelector('.logo3d');
+    addEventListener('pointermove', (e) => {
+      const x = (e.clientX / innerWidth - .5) * 20;
+      const y = (e.clientY / innerHeight - .5) * -20;
+      logo.style.transform = `translateZ(0) rotateX(${y/3}deg) rotateY(${x/3}deg)`;
+    });
+
+    /* Support button mock */
+    document.getElementById('supportBtn').addEventListener('click', (e)=> {
+      // Anchor jumps to #support; show pulse effect
+      const btn = e.currentTarget;
+      btn.animate([{transform:'scale(1)'},{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:400});
+    });
+    document.getElementById('payBtn').addEventListener('click', ()=> {
+      alert('Thanks! Paid support (Rs.10) — this demo uses a placeholder action.');
+    });
+  </script>
+</body>
+</html>
